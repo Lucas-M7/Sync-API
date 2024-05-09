@@ -1,21 +1,17 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /SyncAPI
+# Use the official .NET Core SDK image as a build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+WORKDIR /app
 
-# Copiar o arquivo do projeto e restaurar as dependências
-COPY *.csproj .
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
 RUN dotnet restore
 
-# Copiar todo o código e compilar o projeto
-COPY . .
+# Copy everything else and build
+COPY . ./
 RUN dotnet publish -c Release -o out
 
-# Usar a imagem base do ASP.NET Core para execução
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runtime
-WORKDIR /SyncAPI
-COPY --from=build /app/out ./
-
-# Expor a porta utilizada pela sua aplicação
-EXPOSE 5057
-
-# Definir o comando de inicialização da aplicação
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "SyncAPI.dll"]
