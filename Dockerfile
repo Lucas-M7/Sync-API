@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
+WORKDIR /SyncAPI
 
 # Copiar o arquivo do projeto e restaurar as dependências
 COPY *.csproj .
@@ -11,7 +11,7 @@ RUN dotnet publish -c Release -o out
 
 # Usar a imagem base do ASP.NET Core para execução
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runtime
-WORKDIR /app
+WORKDIR /SyncAPI
 COPY --from=build /app/out ./
 
 # Expor a porta utilizada pela sua aplicação
