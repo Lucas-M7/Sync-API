@@ -31,22 +31,6 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
-
-app.Use(async (context, next) =>
-            {
-                if (context.Request.IsHttps)
-                {
-                    await next();
-                }
-                else
-                {
-                    var httpsPort = 7043; // Substitua pela sua porta HTTPS
-                    var httpsUrl = $"https://{context.Request.Host.Value}:{httpsPort}{context.Request.PathBase}{context.Request.Path}{context.Request.QueryString}";
-                    context.Response.Redirect(httpsUrl);
-                }
-            });
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
